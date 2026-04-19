@@ -1,13 +1,18 @@
+import { type Photo } from '../hooks/usePhotos'
 import { type Settings } from '../lib/settings'
 import { formatCountdown, useCountdown } from '../hooks/useCountdown'
 import { useDelayPhrase } from '../hooks/useDelayPhrase'
 import { usePhraseCycle } from '../hooks/usePhraseCycle'
+import { usePhotoSlideshow } from '../hooks/usePhotoSlideshow'
+import { PhotoSidebar } from './PhotoSidebar'
+import { PhotoBackground } from './PhotoBackground'
 
 interface CountdownScreenProps {
   settings: Settings
+  photos: Photo[]
 }
 
-export function CountdownScreen({ settings }: CountdownScreenProps) {
+export function CountdownScreen({ settings, photos }: CountdownScreenProps) {
   const countdown = useCountdown(settings.startTime)
   const { phrase } = usePhraseCycle(
     settings.phrases,
@@ -19,6 +24,45 @@ export function CountdownScreen({ settings }: CountdownScreenProps) {
     settings.delayIntervalSec,
     countdown.finished,
   )
+  const { currentPhoto } = usePhotoSlideshow(photos, settings.photoIntervalSec)
+
+  if (settings.template === 'photo-sidebar-left') {
+    return (
+      <PhotoSidebar
+        side="left"
+        currentPhoto={currentPhoto}
+        countdown={countdown}
+        phrase={phrase}
+        delayPhrase={delayPhrase}
+        settings={settings}
+      />
+    )
+  }
+
+  if (settings.template === 'photo-sidebar-right') {
+    return (
+      <PhotoSidebar
+        side="right"
+        currentPhoto={currentPhoto}
+        countdown={countdown}
+        phrase={phrase}
+        delayPhrase={delayPhrase}
+        settings={settings}
+      />
+    )
+  }
+
+  if (settings.template === 'photo-background') {
+    return (
+      <PhotoBackground
+        currentPhoto={currentPhoto}
+        countdown={countdown}
+        phrase={phrase}
+        delayPhrase={delayPhrase}
+        settings={settings}
+      />
+    )
+  }
 
   if (countdown.finished) {
     return (
@@ -35,12 +79,6 @@ export function CountdownScreen({ settings }: CountdownScreenProps) {
           </p>
         )}
         {settings.footerText && <Footer text={settings.footerText} />}
-        <style>{`
-          @keyframes headerSwap {
-            from { opacity: 0; transform: translateY(8px); filter: blur(4px); }
-            to   { opacity: 1; transform: translateY(0);   filter: blur(0); }
-          }
-        `}</style>
       </div>
     )
   }
@@ -63,15 +101,7 @@ export function CountdownScreen({ settings }: CountdownScreenProps) {
       >
         {formatCountdown(countdown)}
       </div>
-
       {settings.footerText && <Footer text={settings.footerText} />}
-
-      <style>{`
-        @keyframes headerSwap {
-          from { opacity: 0; transform: translateY(8px); filter: blur(4px); }
-          to   { opacity: 1; transform: translateY(0);   filter: blur(0); }
-        }
-      `}</style>
     </div>
   )
 }

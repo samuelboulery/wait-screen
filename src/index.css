@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+@keyframes headerSwap {
+  from { opacity: 0; transform: translateY(8px); filter: blur(4px); }
+  to   { opacity: 1; transform: translateY(0);   filter: blur(0); }
+}
+
+@keyframes photoFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
 html, body, #root {
   height: 100%;
   margin: 0;

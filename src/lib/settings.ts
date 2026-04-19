@@ -1,3 +1,5 @@
+export type Template = 'default' | 'photo-sidebar-left' | 'photo-sidebar-right' | 'photo-background'
+
 export interface Settings {
   startTime: string
   headerText: string
@@ -8,9 +10,15 @@ export interface Settings {
   swapDurationSec: number
   delayPhrases: string[]
   delayIntervalSec: number
+  template: Template
+  photoIds: string[]
+  photoIntervalSec: number
+  photoSidebarWidthPct: number
 }
 
-const STORAGE_KEY = 'waitscreen.settings.v3'
+const STORAGE_KEY = 'waitscreen.settings.v5'
+const LEGACY_KEY_V4 = 'waitscreen.settings.v4'
+const LEGACY_KEY_V3 = 'waitscreen.settings.v3'
 const LEGACY_KEY_V2 = 'waitscreen.settings.v2'
 const LEGACY_KEY_V1 = 'waitscreen.settings.v1'
 
@@ -56,6 +64,10 @@ export const DEFAULT_SETTINGS: Settings = {
   ],
   swapIntervalSec: 30,
   swapDurationSec: 4,
+  template: 'default',
+  photoIds: [],
+  photoIntervalSec: 8,
+  photoSidebarWidthPct: 33,
 }
 
 interface SettingsV1 {
@@ -71,16 +83,45 @@ interface SettingsV2 extends SettingsV1 {
   footerText: string
 }
 
+interface SettingsV3 extends SettingsV2 {
+  delayPhrases: string[]
+  delayIntervalSec: number
+}
+
 function migrateV1ToV2(old: Partial<SettingsV1>): SettingsV2 {
   return { ...DEFAULT_SETTINGS, ...old, footerText: '' }
 }
 
-function migrateV2ToV3(old: Partial<SettingsV2>): Settings {
+function migrateV2ToV3(old: Partial<SettingsV2>): SettingsV3 {
   return {
     ...DEFAULT_SETTINGS,
     ...old,
     delayPhrases: DEFAULT_SETTINGS.delayPhrases,
     delayIntervalSec: DEFAULT_SETTINGS.delayIntervalSec,
+  }
+}
+
+interface SettingsV4 extends SettingsV3 {
+  template: Template
+  photoIds: string[]
+  photoIntervalSec: number
+}
+
+function migrateV3ToV4(old: Partial<SettingsV3>): SettingsV4 {
+  return {
+    ...DEFAULT_SETTINGS,
+    ...old,
+    template: 'default',
+    photoIds: [],
+    photoIntervalSec: DEFAULT_SETTINGS.photoIntervalSec,
+  }
+}
+
+function migrateV4ToV5(old: Partial<SettingsV4>): Settings {
+  return {
+    ...DEFAULT_SETTINGS,
+    ...old,
+    photoSidebarWidthPct: DEFAULT_SETTINGS.photoSidebarWidthPct,
   }
 }
 
@@ -92,13 +133,23 @@ export function loadSettings(): Settings {
       const parsed = JSON.parse(raw) as Partial<Settings>
       return { ...DEFAULT_SETTINGS, ...parsed }
     }
+    const rawV4 = window.localStorage.getItem(LEGACY_KEY_V4)
+    if (rawV4) {
+      return migrateV4ToV5(JSON.parse(rawV4) as Partial<SettingsV4>)
+    }
+    const rawV3 = window.localStorage.getItem(LEGACY_KEY_V3)
+    if (rawV3) {
+      return migrateV4ToV5(migrateV3ToV4(JSON.parse(rawV3) as Partial<SettingsV3>))
+    }
     const rawV2 = window.localStorage.getItem(LEGACY_KEY_V2)
     if (rawV2) {
-      return migrateV2ToV3(JSON.parse(rawV2) as Partial<SettingsV2>)
+      return migrateV4ToV5(migrateV3ToV4(migrateV2ToV3(JSON.parse(rawV2) as Partial<SettingsV2>)))
     }
     const rawV1 = window.localStorage.getItem(LEGACY_KEY_V1)
     if (rawV1) {
-      return migrateV2ToV3(migrateV1ToV2(JSON.parse(rawV1) as Partial<SettingsV1>))
+      return migrateV4ToV5(
+        migrateV3ToV4(migrateV2ToV3(migrateV1ToV2(JSON.parse(rawV1) as Partial<SettingsV1>))),
+      )
     }
     return DEFAULT_SETTINGS
   } catch {

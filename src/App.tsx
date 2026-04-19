@@ -3,16 +3,26 @@ import { CountdownScreen } from './components/CountdownScreen'
 import { SettingsPanel } from './components/SettingsPanel'
 import { useFullscreen } from './hooks/useFullscreen'
 import { useSettings } from './hooks/useSettings'
+import { usePhotos } from './hooks/usePhotos'
 import { DEFAULT_SETTINGS } from './lib/settings'
 
 export default function App() {
   const { settings, setSettings, update } = useSettings()
   const [open, setOpen] = useState(false)
   const { isFullscreen, toggle: toggleFullscreen } = useFullscreen()
+  const { photos, uploading, uploadPhoto, removePhoto } = usePhotos(settings.photoIds)
+
+  const handlePhotoAdded = (id: string) => {
+    update({ photoIds: [...settings.photoIds, id] })
+  }
+
+  const handlePhotoRemoved = (id: string) => {
+    update({ photoIds: settings.photoIds.filter((pid) => pid !== id) })
+  }
 
   return (
     <div className="relative h-full w-full">
-      <CountdownScreen settings={settings} />
+      <CountdownScreen settings={settings} photos={photos} />
 
       <div className="fixed bottom-6 right-6 z-40 flex gap-2">
         <button
@@ -40,6 +50,12 @@ export default function App() {
           onChange={update}
           onReset={() => setSettings(DEFAULT_SETTINGS)}
           onClose={() => setOpen(false)}
+          photos={photos}
+          uploading={uploading}
+          onPhotoAdded={handlePhotoAdded}
+          onPhotoRemoved={handlePhotoRemoved}
+          onUploadPhoto={uploadPhoto}
+          onRemovePhoto={removePhoto}
         />
       )}
     </div>
