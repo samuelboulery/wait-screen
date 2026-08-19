@@ -244,7 +244,9 @@ export function SettingsPanel({
           <input
             type="datetime-local"
             value={settings.startTime}
-            onChange={(e) => onChange({ startTime: e.target.value })}
+            onChange={(e) =>
+              onChange({ startTime: e.target.value || DEFAULT_SETTINGS.startTime })
+            }
             className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-neutral-50 focus:border-purple-500 focus:outline-none"
           />
         </Field>

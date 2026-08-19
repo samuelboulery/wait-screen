@@ -10,6 +10,9 @@ export interface Countdown {
 
 function compute(targetIso: string): Countdown {
   const target = new Date(targetIso).getTime()
+  if (!Number.isFinite(target)) {
+    return { totalMs: 0, hours: 0, minutes: 0, seconds: 0, finished: true }
+  }
   const now = Date.now()
   const totalMs = Math.max(0, target - now)
   const totalSec = Math.floor(totalMs / 1000)
