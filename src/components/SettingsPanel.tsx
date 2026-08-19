@@ -153,7 +153,7 @@ export function SettingsPanel({
               {photos.length > 0 && (
                 <button
                   onClick={handleRemoveAllPhotos}
-                  className="text-xs text-neutral-500 transition hover:text-red-400"
+                  className="text-xs text-neutral-400 transition hover:text-red-400"
                 >
                   Tout supprimer
                 </button>
@@ -182,7 +182,7 @@ export function SettingsPanel({
             )}
 
             {photos.length === 0 && (
-              <p className="text-xs text-neutral-600">
+              <p className="text-xs text-neutral-400">
                 Aucune photo. Ajoutez des images ci-dessous.
               </p>
             )}
@@ -221,7 +221,7 @@ export function SettingsPanel({
                   onChange={(e) => onChange({ photoSidebarWidthPct: Number(e.target.value) })}
                   className="w-full accent-purple-500"
                 />
-                <div className="flex justify-between text-xs text-neutral-600">
+                <div className="flex justify-between text-xs text-neutral-400">
                   <span>15%</span>
                   <span>60%</span>
                 </div>
@@ -343,7 +343,7 @@ export function SettingsPanel({
         </Field>
 
         <Field label={`Phrases de retard (${settings.delayPhrases.length})`}>
-          <p className="text-xs text-neutral-500">
+          <p className="text-xs text-neutral-400">
             Apparaissent toutes les {settings.delayIntervalSec}s quand le compte à rebours est terminé.
           </p>
           <div className="flex flex-col gap-2">
