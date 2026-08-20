@@ -23,9 +23,9 @@ export function AnnouncementBanner({ message, onDismiss }: Props) {
   }
 
   return (
-    <div className="announcement-banner">
-      <div dangerouslySetInnerHTML={{ __html: message }} />
-      <button onClick={fermer}>
+    <div className="announcement-banner" role="status">
+      <div>{message}</div>
+      <button type="button" onClick={fermer} aria-label="Fermer l'annonce">
         <span aria-hidden="true">×</span>
       </button>
     </div>
