@@ -1,0 +1,16 @@
+# Ce dépôt n'est pas un monorepo : pas de champ `packages`. Ce fichier existe
+# parce que depuis pnpm 10.16 les réglages vivent ici, et non plus dans `.npmrc`
+# ni dans le champ `pnpm` de package.json — que pnpm 11 ignore désormais tout à
+# fait, en le signalant.
+
+# Aucun `allowBuilds` ici : à ce jour aucune dépendance de ce dépôt ne réclame
+# son script d'installation, et pnpm les bloque toutes par défaut. Si une
+# installation future échoue sur ERR_PNPM_IGNORED_BUILDS, elle nommera le
+# paquet — l'autoriser alors nommément, jamais désactiver le blocage.
+# La clé s'appelle `allowBuilds` depuis pnpm 11 ; `onlyBuiltDependencies` est
+# encore lu mais n'autorise plus rien.
+
+# Quarantaine de 24 heures sur toute version fraîchement publiée. Les vers npm
+# font leurs dégâts dans les premières heures, avant que le paquet ne soit retiré
+# du registre. Ce délai laisse le retrait arriver avant nous.
+minimumReleaseAge: 1440
