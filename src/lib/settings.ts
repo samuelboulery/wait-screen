@@ -125,30 +125,82 @@ function migrateV4ToV5(old: Partial<SettingsV4>): Settings {
   }
 }
 
+const TEMPLATES: readonly Template[] = [
+  'default',
+  'photo-sidebar-left',
+  'photo-sidebar-right',
+  'photo-background',
+]
+
+const text = (value: unknown, fallback: string): string =>
+  typeof value === 'string' ? value : fallback
+
+const count = (value: unknown, fallback: number): number =>
+  typeof value === 'number' && Number.isFinite(value) ? value : fallback
+
+const list = (value: unknown, fallback: string[]): string[] =>
+  Array.isArray(value) && value.every((item) => typeof item === 'string')
+    ? (value as string[])
+    : [...fallback]
+
+// localStorage est une frontière externe : une valeur du mauvais type (édition
+// manuelle, autre onglet, migration ratée) retombe sur le défaut du champ plutôt
+// que d'atteindre le rendu, où un `phrases.map` la ferait crasher en écran blanc.
+export function sanitizeSettings(candidate: unknown): Settings {
+  const raw: Record<string, unknown> =
+    typeof candidate === 'object' && candidate !== null
+      ? (candidate as Record<string, unknown>)
+      : {}
+
+  return {
+    startTime: text(raw.startTime, DEFAULT_SETTINGS.startTime),
+    headerText: text(raw.headerText, DEFAULT_SETTINGS.headerText),
+    footerText: text(raw.footerText, DEFAULT_SETTINGS.footerText),
+    finishedText: text(raw.finishedText, DEFAULT_SETTINGS.finishedText),
+    phrases: list(raw.phrases, DEFAULT_SETTINGS.phrases),
+    swapIntervalSec: count(raw.swapIntervalSec, DEFAULT_SETTINGS.swapIntervalSec),
+    swapDurationSec: count(raw.swapDurationSec, DEFAULT_SETTINGS.swapDurationSec),
+    delayPhrases: list(raw.delayPhrases, DEFAULT_SETTINGS.delayPhrases),
+    delayIntervalSec: count(raw.delayIntervalSec, DEFAULT_SETTINGS.delayIntervalSec),
+    template: TEMPLATES.includes(raw.template as Template)
+      ? (raw.template as Template)
+      : DEFAULT_SETTINGS.template,
+    photoIds: list(raw.photoIds, DEFAULT_SETTINGS.photoIds),
+    photoIntervalSec: count(raw.photoIntervalSec, DEFAULT_SETTINGS.photoIntervalSec),
+    photoSidebarWidthPct: count(
+      raw.photoSidebarWidthPct,
+      DEFAULT_SETTINGS.photoSidebarWidthPct,
+    ),
+  }
+}
+
 export function loadSettings(): Settings {
   if (typeof window === 'undefined') return DEFAULT_SETTINGS
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY)
     if (raw) {
-      const parsed = JSON.parse(raw) as Partial<Settings>
-      return { ...DEFAULT_SETTINGS, ...parsed }
+      return sanitizeSettings(JSON.parse(raw))
     }
     const rawV4 = window.localStorage.getItem(LEGACY_KEY_V4)
     if (rawV4) {
-      return migrateV4ToV5(JSON.parse(rawV4) as Partial<SettingsV4>)
+      return sanitizeSettings(migrateV4ToV5(JSON.parse(rawV4) as Partial<SettingsV4>))
     }
     const rawV3 = window.localStorage.getItem(LEGACY_KEY_V3)
     if (rawV3) {
-      return migrateV4ToV5(migrateV3ToV4(JSON.parse(rawV3) as Partial<SettingsV3>))
+      return sanitizeSettings(migrateV4ToV5(migrateV3ToV4(JSON.parse(rawV3) as Partial<SettingsV3>)))
     }
     const rawV2 = window.localStorage.getItem(LEGACY_KEY_V2)
     if (rawV2) {
-      return migrateV4ToV5(migrateV3ToV4(migrateV2ToV3(JSON.parse(rawV2) as Partial<SettingsV2>)))
+      return sanitizeSettings(
+        migrateV4ToV5(migrateV3ToV4(migrateV2ToV3(JSON.parse(rawV2) as Partial<SettingsV2>))),
+      )
     }
     const rawV1 = window.localStorage.getItem(LEGACY_KEY_V1)
     if (rawV1) {
-      return migrateV4ToV5(
-        migrateV3ToV4(migrateV2ToV3(migrateV1ToV2(JSON.parse(rawV1) as Partial<SettingsV1>))),
+      return sanitizeSettings(
+        migrateV4ToV5(
+          migrateV3ToV4(migrateV2ToV3(migrateV1ToV2(JSON.parse(rawV1) as Partial<SettingsV1>))),
+        ),
       )
     }
     return DEFAULT_SETTINGS
