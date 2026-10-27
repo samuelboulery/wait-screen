@@ -4,12 +4,12 @@ Ces règles s'appliquent à toute session Claude sur ce projet. Pas d'exception.
 
 ## What Claude Must Never Do
 
-- **Ne jamais ajouter de backend, d'API, ou de service externe** sans validation. L'app doit rester 100% locale (un simple `npm run dev` ou un dossier `dist/` statique).
-- **Ne jamais introduire de dépendance** (npm install) sans demander d'abord. La stack actuelle (React 19 + Tailwind v4) suffit.
+- **Ne jamais ajouter de backend, d'API, ou de service externe** sans validation. L'app doit rester 100% locale (un simple `pnpm dev` ou un dossier `dist/` statique).
+- **Ne jamais introduire de dépendance** (pnpm add) sans demander d'abord. La stack actuelle (React 19 + Tailwind v4) suffit.
 - **Ne jamais changer la clé localStorage `waitscreen.settings.v1`** sans bumper la version (`v2`, `v3`…) ET écrire une migration dans `src/lib/settings.ts`. Sinon les utilisateurs perdent leurs réglages.
 - **Ne jamais appeler `setState` synchroniquement dans le corps d'un `useEffect`** — la règle ESLint `react-hooks/set-state-in-effect` (React 19) le bloque. Utiliser un compteur de tick et calculer la valeur à chaque rendu, ou retourner tôt avec un flag `enabled`.
 - **Ne jamais ajouter de tracking, télémétrie, ou requête réseau sortante.**
-- **Ne jamais committer** sans avoir vérifié `npm run lint` ET `npm run build`.
+- **Ne jamais committer** sans avoir vérifié `pnpm lint` ET `pnpm build`.
 
 ## File Organization
 
@@ -36,6 +36,6 @@ Toute évolution de la forme de `Settings` (ajout, suppression, ou changement de
 
 ## Avant Tout Commit
 
-- [ ] `npm run lint` passe sans warning
-- [ ] `npm run build` passe (TypeScript + Vite)
+- [ ] `pnpm lint` passe sans warning
+- [ ] `pnpm build` passe (TypeScript + Vite)
 - [ ] L'app a été testée à l'œil dans le navigateur (countdown actif, phrase qui apparaît/disparaît, état "fini" quand on met une heure passée)

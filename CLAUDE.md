@@ -29,16 +29,16 @@
 
 ```bash
 # Développement (HMR sur http://localhost:5173)
-npm run dev
+pnpm dev
 
 # Build production (sortie dans dist/)
-npm run build
+pnpm build
 
 # Prévisualiser le build
-npm run preview
+pnpm preview
 
 # Lint (doit rester clean avant tout commit)
-npm run lint
+pnpm lint
 ```
 
 ## Code Conventions
@@ -53,7 +53,7 @@ npm run lint
 
 ## Constraints
 
-- **Ne jamais ajouter de backend** ni de service externe sans demander — l'app doit pouvoir tourner offline depuis un simple `npm run dev` ou un `dist/` statique.
+- **Ne jamais ajouter de backend** ni de service externe sans demander — l'app doit pouvoir tourner offline depuis un simple `pnpm dev` ou un `dist/` statique.
 - **Ne pas changer la clé localStorage** (`waitscreen.settings.v1`) sans bumper la version et écrire une migration — sinon tous les utilisateurs perdent leurs réglages.
 - **Ne pas installer de nouvelle dépendance** sans validation explicite. Préférer une implémentation à la main avec ce qui est déjà là (React + Tailwind suffisent pour 99% des besoins de cette app).
 - **Ne pas ajouter de tracking, télémétrie, ou requête réseau sortante.**
@@ -94,6 +94,6 @@ src/
 ## Team & Process
 
 Projet solo. Pas de PR formelle, pas de CI. Avant tout commit :
-- `npm run lint` doit passer
-- `npm run build` doit passer
+- `pnpm lint` doit passer
+- `pnpm build` doit passer
 - Tester visuellement l'app en mode dev (countdown actif, transition vers phrase, état "fini")
