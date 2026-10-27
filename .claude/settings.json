@@ -2,16 +2,16 @@
   "permissions": {
     "allow": [
       "Bash(git:*)",
-      "Bash(npm run dev)",
-      "Bash(npm run build)",
-      "Bash(npm run lint)",
-      "Bash(npm run preview)",
-      "Bash(npm install)",
-      "Bash(npm install --save-dev *)",
-      "Bash(npm install --save *)",
-      "Bash(npm ci)",
-      "Bash(npx tsc *)",
-      "Bash(npx vite *)"
+      "Bash(pnpm dev)",
+      "Bash(pnpm build)",
+      "Bash(pnpm lint)",
+      "Bash(pnpm preview)",
+      "Bash(pnpm install)",
+      "Bash(pnpm add -D *)",
+      "Bash(pnpm add *)",
+      "Bash(pnpm install --frozen-lockfile)",
+      "Bash(pnpm exec tsc *)",
+      "Bash(pnpm exec vite *)"
     ]
   }
 }
